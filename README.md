@@ -100,8 +100,20 @@ Kubernetes Networking :
    Node Port -Cluster ke node ke IP+ port ke through access
    LoadBalancer- Cloud provider ke external LB se connect hota hai
    Ingress- Domain based routing krta hai , reverse proxy jase
-4. Ingress -External Traffic Management
-        
+
+Ingress -External Traffic Management
+   What is Ingress? Ingress ek set of rules hota hai jo external HTTP/HTTPs traffic ke ander ke services tak route krne ke liye use hota hai
+    ye traffic ko control krne ka ek central point provide krta hai.
+   Functions:
+   a) Traffic Routing: Incoming traffic ko different services me route krna based on URL paths ya hostnames.
+   b) TLS/SSL Termination: Secure connection (HTTPS) establish krna aur certificate management handle krna.
+   c) LoadBalancing : Traffic ko distribute krna across multiple backeend services.
+   d) URL Rewrite/Redirection: Advance routing rules, jase URL rewrites, implement krna.
+
+Ingress Controller: Basically    
+
+   
+       
    
 6. External-to-Service(Ingress/ Nodeport/ LoadBalancer)
 7. DNS Resolution inside Cluster.
