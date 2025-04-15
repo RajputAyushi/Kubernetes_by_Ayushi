@@ -1,37 +1,3 @@
-Kubernetes Services- Connecting your applications
-what is a Service?--service ek stable network endpoint hai jo ek logical group of pods ko represent krta hai ye ensure krta hai ki pods ke dynamic IP chnages ke nawajood, ek constant access point mil jaye.
-use case: Pods ke set ko ek DND name aur stable IP provide krna, Load balancing krna taki traffic evenly pods me dirtribute ho, Pods ke lifecycle chnages (restart, update) ke bawajood connectivity maintain rakhna.
-Types of Services :
-a) ClusterIP (Default): pods ke liye ek internal, virtual ip banata hai jo sirf cluster ke ander hi accessible hota hai.
-use case: jab tumhare services ko sirf internal communication (microservices architecture) ke liye use krna hota hai.
-b) Nodeport: har node ke ip ke sath ek specific port open krta hai.
-External traffic node ke IP:Port ko hit krke pods se communicate kr skta hai.
-Use case: Testing ya development env me jab directly node ke through access chahiye.
-c) LoadBalancer: Cloud providers (like AWS , GCP ) me external load balancer create krta hai jo service ke sath bind ho jata hai.
-Automatically external IP provide krta  hai.
-Use case: Production enviroment me jab high availability aur scalability required ho.
-
-How Services work in kubernetes
-1. Label Selectors:
-   Services use label selectors to automatically pick the right group of pods. ex agar pod me label app: myapp diya ho, to service configuration me bhi same selector specify krte ho.
-2.Endpoints:
-   Services ke IP ke piche actual pod IP addresses list hoti hain, yeh endpoints dynamically update hote hain jab pods add/delete ho rhe hote hain.
-3.DNS- Based Service Discovery:
-   Cluster ke ander, har service ko ek DNS name milta hai (e.g myapp-service.default.svc.cluster.local), jisse pods easily connect ho skate hain.
-4.Load Balancing:
-   Service automatic load balancing krta hai incoming traffic ko available pods me distribute krke.
-   Analogy: Pod= taxi, Replicaset= taxi company ki fleet jo ensure krte h hamesha certain number me taxi available ho, Service =booking system jo automatically available taxi assign krta hai.
-
-Kubernetes Networking : 
-1. Pod to Pod:
-    har pod ko ek unique ip Address milta hai ( CNI se),  Sabhi pods same flat network me hote hain, isliye ek pod dusre pod ko direct IP se access kr sakta hai - bina NAT ke, lekin - IPs dynamic hote hain, to isse stable solution nhi mana jata.
-2. Pod to Service:
-   isliye service banay jata hai, ye ek permanent IP+DNS name deta hai jo multiple pods ko represent krta hai, agar pod delete ho gya, naye wale ko connect krne me kio dikkat nhi
-3. Cluster ke bahar se agar traffic lana hai to teen tareeke hate hai
-   Node Port -Cluster ke node ke IP+ port ke through access
-   LoadBalancer- Cloud provider ke external LB se connect hota hai
-   Ingress- Domain based routing krta hai , reverse proxy jase
-
 Ingress -External Traffic Management
    What is Ingress? Ingress ek set of rules hota hai jo external HTTP/HTTPs traffic ke ander ke services tak route krne ke liye use hota hai, jab tumhare cluster ke ander multiple services chal rhi hoti hain (jase website, API, Admin panel) toh unko bahar se access 
                     krne ke liye hum ingress ka use krte hain. ye traffic ko control krne ka ek central point provide krta hai. use suppose you have multiple services (like service1, service2) running in your cluster. Instaed of exposing each via NodePort or 
@@ -74,7 +40,7 @@ Ingress Controller: Ingress Controller ek software hota hai (jase nginx , Traefi
             number:8080
 
      Step 4 : YAML file apply karo
-    kubectl applu -f ingress.yaml
+    kubectl apply -f ingress.yaml
 
     Step 5 : /etc/hosts me entry add kro
     sudo nano /etc/hosts
@@ -134,71 +100,3 @@ Step-1   Simple yaml file for job
     3.iss file ko Cronjob.yaml se save kro >>>>>>>>> kubectl apply -f cronjob.yaml
     4. CronJob status aur schedule krne ke liye >>>>>kubectl get cronjob
 
-1. ConfigMap: ek kubernetes resource hai jiska use application configuration data like (key-value pairs, configuration file, enviroment variables) and configuration files (app-config.properties) ko store krne ke liye hota hai.
-   yeh sensitive data ke liye nhi hota; basic configuration values ke liye use krte hain. ConfigMap se tum apne container images ko bina naya image banaye, configuration dynamically inject kr sakte ho.
-ConfigMap Banane ka idea:
-Tumhe bs kuch configuration data hai jo application ko chalane ke liye chahiye jaise
-ex-1 simple key-value Pair ConfigMap
-apiVersion: v1                                                                                { is file me humne do key-value pairs diye: APP_MODE aur APP_DEBUG. yeh values tumhare application ko batayenge ki production mode mein chalna hai ya debugging off hai.}
-kind: ConfigMap
-matadata:
-  name: example-configmap
-data:
-  APP_MODE: "production"
-  APP_DEBUG: "false"
-
-use in Pod: agar tumhe application ko in values ki jarurat hai, toh tum inhe enviroment variables ke roop mein inject kr skate hao.
-
-apiVersion: v1
-kind: Pod
-metadata: 
-  name: configmap-example-pod
-spec:
- containers:
- - name: myapp                                                                               {is pod ke ander, APP_MODE enviroment variable automatically "production: set ho jayega, jo congifmap se aaya hai.}
-   image: busybox
-   env:
-   -name: APP_MODE
-    valueFrom:
-      configMapKeyRef:
-         name: my-config
-         key:APP_MODE
-    command: ["sh", "-c" , "echo APP_MODE is $APP_MODE && slepp 3600"]
-
-
-   Secrets: maan lo tumhe apne application ke database ke password ko secure rakhna hai, jase
-     DB_PASSWORD: mysecretpassword  .............yeh sensitive information h isley ise secret ke roop mein store krte h
-   
-   
-
-
-    
-    
- 
-  
-         
-    
-   
-       
-   
-6. External-to-Service(Ingress/ Nodeport/ LoadBalancer)
-7. DNS Resolution inside Cluster.
-     
-    
-    
-   
-   
-   
-    
-   
-   
-Step 1: Install minikube
-        minikube start
-
-Step 2: Check cluster status
-        kubectl cluster-info
-        kubectl get nodes
-        kubectl get pods --all-namespaces
-
-Step 3: 
-        
