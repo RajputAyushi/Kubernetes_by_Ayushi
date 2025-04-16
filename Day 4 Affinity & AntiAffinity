@@ -1,0 +1,64 @@
+Affinity & Anti-affinity 
+Affinity (Pod Affinity & Node Affinity)
+Pod Affinity: Agar app chahte h ki kuch pods ek hi node ya nearby nodes pr run ho, Kyuki wo ek dusre ke sath communication ya data sharing ke liye pass ho.
+ex agar apke pas frontend aur backend pods hain aur app chahte hain ki backend pods un frontend pods ke pas ho to avoid latency.
+
+Node Affinity:Yeh pods ko specific nodes pr schedule krne ke liye use hota hai, based on node labels.
+ex agar app chahte h ki kio compute intensive application sirf un nodes pr chale jinke pas high CPU ya GPU resources hain, to node affinity se app condition lga sakte hain.
+
+Anti-Affinity- 
+Pod Anti-afinity:iska mtlb h ki app chhate hain ki kuch pods ek hi node ya closely located nodes pr run na ho. Agar aap chahte hain ki apke apllication ke replicas ek hi node pr na ho, 
+taki agar us node pr kio issue aaye toh sab replicas affect na ho, to aap pod anti-afinity apply kr skate hain.
+
+ex
+apiVersion: v1
+kind: Pod
+metadata:
+   name: affinity-example
+   labels:
+     app: myapp
+spec:
+  containers:
+  - name: mycontainer
+    image: nginx:latest
+  affinity
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:                {scheduling ke time mandatory check hota hai, execution ke time ignore ho sakta hai agar kuch changes ho jaye}
+      - labelSelector:                                                {labelSelector ke through specify krte hain ki un pods ke sath affinity hai jinke paas app: myapp label hai.
+          matchExpressions:
+          -key: app
+           operator: In
+           values:
+          - conflicting-app
+     topologyKey: "kubernetes.io/hostname"                          {"kubernetes.io/hostname" use krke batate hain ki same node (ya same host) mein hone chhaiye}
+
+     podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:                                        {yahan humein batana hai ki is pod ko un pods ke sath schedule nhi krna jinke paas app: conflicting-app label hai.}
+          - key: app
+            operator: In
+            values:
+            - conflicting-app
+       topologyKey:"kubernetes.io/hostname"                         { fr topologykey same node-level pe check krta hai, isse ensure hota hai ki same node pr conflicting pods na ho.}
+
+Interview Questions:
+what is node Affinity? and how does it works?
+Node Affinity ek scheduling rule hai jo pod ko specific nodes pr place krne ke liye use hota hai, based on node labels. yeh 2 types ke hote hain.
+RequiredDuringSchedulingIgnored-DuringExecution: Jaise scheduling ke time mandatory condition lagna.
+PreferredDuringSchedulingIgnored-DuringExecution: Preffered conditions jo advisory hote hain. isse hum specify kr sakte hain ki pods kaunse hardware resources ( jase GPU ya hign memory) wale node pe run kare.
+
+What is the role of TopologyKey?
+topologyKey specify krta hai ki affinity ya anti-affinity conditions ko kaunse domain me evaluate krna hai. sabse common topologykey "kubernetes.ioo/hostname" hota hai, jo node-level check krta hai.
+Lekin app custom tolpogy keys bhi bna sakte hain jase availabilty zones ya regions, taki scheduling aur granular ho skae.
+
+Rule
+Affinity rules ko implement krne ke bad hamesha pods ki placement check kro
+using:
+kubectl get pods -o wide   >>>>>>>>>>>>>>>>>it shows nodes on which pods run
+
+
+
+
+
+
