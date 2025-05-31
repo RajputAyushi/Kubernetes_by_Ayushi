@@ -6,7 +6,7 @@ What is kubernetes?(k8s)
  image you have 50 Docker containers now it is difficult to manage them like start, stop , monitor and if any container crashes then how can we restart manually
  Kubernetes automatically container ko restart krega, Load jyada h naye container ko launch karega 
  container down hai ? health check karega aur replace karega
- Blue green deployments, Rolling updates bhi easy bna deta hai.
+ Blue green deployments, Rolling updates bhi easy bna deta hai
 
 Kubernetes Architecture is divided into 2 parts
 1. Master Node(control plane)- Brain of the cluster
