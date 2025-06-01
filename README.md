@@ -80,7 +80,7 @@ c) LoadBalancer: Cloud providers (like AWS , GCP ) me external load balancer cre
 Automatically external IP provide krta  hai.
 Use case: Production enviroment me jab high availability aur scalability required ho.
 
-How Services work in kubernetes
+How Services work in kubernetes.
 1. Label Selectors:
    Services use label selectors to automatically pick the right group of pods. ex agar pod me label app: myapp diya ho, to service configuration me bhi same selector specify krte ho.
 2.Endpoints:
