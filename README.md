@@ -101,3 +101,81 @@ Kubernetes Networking :
    LoadBalancer- Cloud provider ke external LB se connect hota hai
    Ingress- Domain based routing krta hai , reverse proxy jase
 
+ CrashLoopBackOff Error –
+📌 CrashLoopBackOff Error Kya Hota Hai?
+Jab Kubernetes ka pod baar-baar crash ho raha ho, aur container start hone ke baad turant ya kuch time baad exit code ke sath fail ho jaata ho, tab Kubernetes usse baar-baar restart karta hai.
+Yeh repeat hone lagta hai, aur ek point ke baad Kubernetes bolta hai:
+"CrashLoopBackOff" – yaani "Crash ho raha hai aur ab thodi der ruk kar dobara try karunga".
+Is cycle ko todne ke liye Kubernetes exponential backoff strategy lagata hai (jaise: 10s, 20s, 40s...).
+Reasons
+1️⃣ Code Bug	App me bug hone ki wajah se container crash karta hai.
+2️⃣ Wrong Config	Misconfigured environment variables, configmaps ya secrets.
+3️⃣ Missing Files/Dependencies	Required files ya packages nahi mil rahe container ko.
+4️⃣ Database not reachable	App start hote hi DB connect karne ki koshish karta hai par DB up nahi hai.
+5️⃣ Readiness/Liveness Probe Failures	Health checks fail ho jaate hain to Kubernetes container ko kill kar deta hai.
+🛠️ Troubleshooting Steps:
+# 1. Pod ke status check karo
+kubectl get pods
+# 2. Pod ke logs dekho
+kubectl logs <pod-name> -n <namespace>
+# 3. Agar multi-container pod hai:
+kubectl logs <pod-name> -c <container-name> -n <namespace>
+# 4. Describe command se error reason dekho
+kubectl describe pod <pod-name> -n <namespace>
+❓ "CrashLoopBackOff error aaye to aap kaise troubleshoot karoge?"
+Sabse pehle kubectl describe se events check karunga, phir kubectl logs se application logs dekhunga. Agar config, DB ya dependency ka issue hua toh fix karke pod restart karunga.
+
+ImagePullBackOff Kya Hota Hai?
+Kubernetes jab pod banata hai, tab har container ke liye uski image pull (download) karta hai. Agar image pull nahi kar paata (e.g., image exist nahi karti, auth error hai), to Kubernetes pod ko ImagePullBackOff state me daal deta hai.
+
+📚 Notes for Interview (One-Liner Points Format)
+🔹 ImagePullBackOff Error:
+Jab container image pull karne me fail ho jaata hai, to pod ImagePullBackOff state me chala jaata hai.
+
+Yeh error mostly tab aata hai jab image ka naam galat ho, ya registry private ho.
+
+❌ Common Causes:
+🔢 कारण	विवरण
+1️⃣ Wrong Image Name/Tag	Jaise nginx:latset (typo hona)
+2️⃣ Image Not Found	Registry me image hai hi nahi
+3️⃣ Private Registry	DockerHub ya ECR jaise registries ke liye auth token chahiye
+4️⃣ No Internet Access	Cluster me internet access nahi hai
+5️⃣ ImagePullPolicy Issue	Agar imagePullPolicy: Always hai aur latest image nahi mil rahi
+
+🛠️ Troubleshooting Steps:
+bash
+Copy
+Edit
+# 1. Pod ke status check karo
+kubectl get pods
+
+# 2. Describe se error details dekho
+kubectl describe pod <pod-name> -n <namespace>
+🔍 Example Error Output:
+
+pgsql
+Copy
+Edit
+Failed to pull image "myrepo/app:v1": rpc error: code = Unknown desc = Error response from daemon: manifest for myrepo/app:v1 not found
+Back-off pulling image "myrepo/app:v1"
+✅ Interview Friendly Answer:
+❓ "Agar pod ImagePullBackOff me chala jaaye to aap kya karenge?"
+
+Answer:
+
+Main kubectl describe pod se error message check karunga. Agar image ka naam galat hai toh correct karunga. Agar private registry hai toh image pull secret configure karunga. Aur agar internet ka issue hai toh node ke connectivity check karunga.
+
+🧾 Extra Tip (Secret for Private Registry):
+yaml
+Copy
+Edit
+kubectl create secret docker-registry regcred \
+  --docker-username=<your-username> \
+  --docker-password=<your-password> \
+  --docker-email=<your-email> \
+  --namespace=<your-namespace>
+yaml
+Copy
+Edit
+imagePullSecrets:
+  - name: regcred
